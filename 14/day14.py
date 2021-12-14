@@ -17,7 +17,6 @@ class Polymer:
                 parts = line.strip().split(" ")
                 self.rules[parts[0]] = parts[2]
 
-
     def step(self, steps=1):
         for _ in range(steps):
             new_pairs = self.pairs.copy()
