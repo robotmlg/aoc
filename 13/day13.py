@@ -5,7 +5,7 @@ class Grid:
     def __init__(self):
         self.points = []
         self.instructions = []
-        with open("day13.txt") as f:
+        with open("day13extended.txt") as f:
             for line in f:
                 if "," in line:
                     self.points.append(tuple([int(c) for c in line.strip().split(",")]))
