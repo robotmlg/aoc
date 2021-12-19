@@ -85,8 +85,7 @@ def magnitude(x):
     return n[0]
 
 
-
-def day18():
+def day18A():
     number = []
     with open("day18.txt") as f:
         for line in f:
@@ -97,5 +96,21 @@ def day18():
                 number = new_number
     return magnitude(number)
 
+
+def day18B():
+    with open("day18.txt") as f:
+        numbers = [parse_number(line) for line in f.readlines()]
+
+    max_mag = 0
+    for i in range(len(numbers)):
+        for j in range(len(numbers)):
+            if i != j:
+                mag = magnitude(add(numbers[i], numbers[j]))
+                if mag > max_mag:
+                    max_mag = mag
+    return max_mag
+
+
 if __name__ == "__main__":
-    print(day18())
+    print(day18A())
+    print(day18B())
