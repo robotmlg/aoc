@@ -30,8 +30,8 @@ def parse_number(arr, idx):
     return int(num_str)
             
 
-def process(schematic, func):
-    total = 0
+def process(schematic):
+    symbol_parts = []
     for i in range(len(schematic)):
         for j in range(len(schematic[i])):
             curr = schematic[i][j]
@@ -56,9 +56,8 @@ def process(schematic, func):
                             for y in range(j-1, j+2):
                                 if y in range(0, len(schematic[x])):
                                     parts_on_symbol.append(parse_number(schematic[x], y))
-                valid_parts = [p for p in parts_on_symbol if p != 0]
-                total += func(valid_parts)
-    print(total)
+                symbol_parts.append([p for p in parts_on_symbol if p != 0])
+    return symbol_parts
 
 def part1(valid_parts):
     return sum(valid_parts)
@@ -70,5 +69,6 @@ def part2(valid_parts):
         return 0
 
 schematic = parse_input()
-process(schematic, part1)
-process(schematic, part2)
+parts = process(schematic)
+print(sum([part1(ps) for ps in parts]))
+print(sum([part2(ps) for ps in parts]))
