@@ -21,7 +21,7 @@ def find_words(grid, start_row, start_col, word):
                     return 0
                 if grid[start_row + delta[0]*i][start_col + delta[1]*i]  != letters[i]:
                     return 0
-            print(f"Found at row {start_row} col {start_col} going {name}")
+            # print(f"Found at row {start_row} col {start_col} going {name}")
             return 1
         except IndexError:
             return 0
@@ -41,29 +41,25 @@ def find_words(grid, start_row, start_col, word):
 
 
 def part1(grid):
-    word = "XMAS"
-    count = 0
-    for row in range(len(grid)):
-        for col in range(len(grid[row])):
-            count += find_words(grid, row, col, word)
-    return count
+    return sum([
+        find_words(grid, row, col, "XMAS")
+        for row in range(len(grid))
+        for col in range(len(grid[row]))
+    ])
 
 
 def part2(grid):
-    count = 0
-    for row in range(1, len(grid) - 1):
-        for col in range(1, len(grid[row]) - 1):
-            if (
-                grid[row][col] == "A" and
-                (
-                [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["S", "S", "M", "M"] or
-                [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["M", "S", "S", "M"] or
-                [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["M", "M", "S", "S"] or
-                [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["S", "M", "M", "S"]
-                )
-            ):
-                count += 1
-    return count
+    return sum([
+        grid[row][col] == "A" and
+        (
+            [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["S", "S", "M", "M"] or
+            [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["M", "S", "S", "M"] or
+            [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["M", "M", "S", "S"] or
+            [grid[row+1][col+1], grid[row+1][col-1], grid[row-1][col-1], grid[row-1][col+1]] == ["S", "M", "M", "S"]
+        )
+        for row in range(1, len(grid) - 1)
+        for col in range(1, len(grid[row]) - 1)
+    ])
 
 
 grid = parse()
