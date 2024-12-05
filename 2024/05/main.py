@@ -45,17 +45,11 @@ def fix_update(rules, update):
             except ValueError:
                 continue
             if target_index > 0:
-                # back check all the rules for the target number
+                # back check the target number rule for the start
                 target_rules = rules.get(rule, [])
-                for target_rule in target_rules:
-                    try:
-                        target_target_index = update.index(target_rule)
-                    except ValueError:
-                        continue
-                    if target_target_index > target_index:
-                        continue
-                    # this rule is not met, swap the elements and start over
-                    update[target_target_index], update[target_index] = update[target_index], update[target_target_index]
+                if page in target_rules:
+                    # if the 0 page has a rule for the target, swap
+                    update[0], update[target_index] = update[target_index], update[0]
                     break
             # this rule is not met, swap the elements and start over
             update[0], update[target_index] = update[target_index], update[0]
