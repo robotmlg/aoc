@@ -1,84 +1,79 @@
 
-
 def parse(file="input.txt"):
     grid = []
     with open(file, "r") as f:
         for line in f:
             grid.append(list(line))
-    # find the guard
+    # map the grid
+    obstacles = set()
     for row in range(len(grid)):
         for col in range(len(grid[row])):
             match grid[row][col]:
                 case "^":
-                    return grid, (row, col), (-1, 0)  
+                    pos, direction = complex(row, col), -1
                 case ">":
-                    return grid, (row, col), (0, 1)  
+                    pos, direction = complex(row, col), 1j
                 case "v":
-                    return grid, (row, col), (1, 0)  
+                    pos, direction = complex(row, col), 1
                 case "<":
-                    return grid, (row, col), (0, -1)  
+                    pos, direction = complex(row, col), -1j
+                case "#":
+                    obstacles.add(complex(row, col))
                 case _:
                     pass
-    raise Exception("Invalid input!")
+    return {
+        "obstacles": obstacles,
+        "start": pos,
+        "direction": direction,
+        "width": len(grid[0]),
+        "height": len(grid),
+    }
 
 
-def get_next_direction(direction):
-    match direction:
-        case (-1, 0):
-            return (0, 1)
-        case (0, 1):
-            return (1, 0)
-        case (1, 0):
-            return (0, -1)
-        case (0, -1):
-            return (-1, 0)
-        case _:
-            raise Exception(f"Invalid direction! {direction}")
+def walk(state, max_steps=50000):
+    def is_in_grid(x):
+        return 0 <= x.real < state["height"] and 0 <= x.imag < state["width"]
+        
+    visited = []
+    pos = state["start"]
+    direction = state["direction"]
+    while is_in_grid(pos) and len(visited) < max_steps:
+        visited.append(pos)
+        next_pos = pos + direction
+        # while loop to account for doing a u-turn on the spot
+        while is_in_grid(next_pos) and next_pos in state["obstacles"]:
+            direction = direction * -1j
+            next_pos = pos + direction
+        pos = next_pos
+
+    if len(visited) == max_steps:
+        return None
+
+    return set(visited)
 
 
-def vector_add(a, b):
-    return a[0] + b[0], a[1] + b[1]
+def part2(state, visited):
+    possible_positions = set()
+    for p in visited:
+        # test every point along the path
+        new_obstacles = set(state["obstacles"])
+        new_obstacles.add(p)
+        walk_result = walk({
+            "obstacles": new_obstacles,
+            "start": state["start"],
+            "direction": state["direction"],
+            "width": state["width"],
+            "height": state["height"],
+        }, max_steps=5*len(visited))
+
+        if walk_result is None:
+            possible_positions.add(p)
+
+    return len(possible_positions)
     
 
-def walk(grid, pos, direction):
-    visited = set()
-    obstacles = set()
-    while 0 <= pos[0] < len(grid) and 0 <= pos[1] < len(grid[pos[0]]):
-        visited.add(pos)
-        next_pos = vector_add(pos, direction)
-        if 0 <= next_pos[0] < len(grid) and 0 <= next_pos[1] < len(grid[pos[0]]) and grid[next_pos[0]][next_pos[1]] == "#":
-            obstacles.add(next_pos)
-            direction = get_next_direction(direction)
-            next_pos = vector_add(pos, direction)
-        pos = next_pos
-
-    return visited, obstacles
-
-
-def part2(grid, pos, direction):
-    visited = []
-    new_obstacles = set()
-    while 0 <= pos[0] < len(grid) and 0 <= pos[1] < len(grid[pos[0]]):
-        if pos in visited:
-            print(f"previously visited {pos}")
-            # we've been here before, check if we made a rectangle
-            last_visit_idx = visited.index(pos)
-            sub_path = visited[last_visit_idx:]
-            # check if the sub path is a rectangle
-            sub_direction = get_next_direction(direction)
-
-
-        visited.append(pos)
-        next_pos = vector_add(pos, direction)
-        if 0 <= next_pos[0] < len(grid) and 0 <= next_pos[1] < len(grid[pos[0]]) and grid[next_pos[0]][next_pos[1]] == "#":
-            direction = get_next_direction(direction)
-            next_pos = vector_add(pos, direction)
-        pos = next_pos
-
-    return len(new_obstacles)
-
-
-grid, start, direction = parse()
-visited, obstacles = walk(grid, start, direction)
+state = parse()
+visited = walk(state)
 print(len(visited))
-print(part2(grid, start, direction))
+print(part2(state, visited))
+
