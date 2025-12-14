@@ -34,16 +34,12 @@ def part2(graph):
     global GRAPH
     GRAPH = graph
     find_paths.cache_clear()
-    dac_fft = find_paths("dac", "fft")
 
-    if dac_fft:
-        return (
-            find_paths("svr", "dac") *
-            dac_fft *
-            find_paths("fft", "out")
-        )
-    else:
-        return (
+    return (
+        find_paths("svr", "dac") *
+        find_paths("dac", "fft") *
+        find_paths("fft", "out")
+        ) + (
             find_paths("svr", "fft") *
             find_paths("fft", "dac") *
             find_paths("dac", "out")
